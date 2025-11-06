@@ -63,9 +63,21 @@ fi
 echo -e "${GREEN}✓ Paketler kuruldu${NC}"
 echo ""
 
-# install_termux.sh'e chmod ver ve çalıştır
+# Tüm scriptlere chmod ver
+echo -e "${BLUE}⚙️  Dosya izinleri ayarlanıyor...${NC}"
+chmod -R 755 .
+chmod +x *.sh
+chmod +x *.py
+
+# Proje klasörünü oluştur ve chmod ver
+mkdir -p projects
+chmod 777 projects
+
+echo -e "${GREEN}✓ Dosya izinleri ayarlandı${NC}"
+echo ""
+
+# install_termux.sh'i çalıştır
 echo -e "${BLUE}⚙️  Kurulum scripti çalıştırılıyor...${NC}"
-chmod +x install_termux.sh
 ./install_termux.sh
 
 echo ""
@@ -78,7 +90,7 @@ echo ""
 echo -e "${YELLOW}Termux'u kapatıp tekrar açtığınızda:${NC}"
 echo -e "  • Panel otomatik başlayacak"
 echo -e "  • Tarayıcı otomatik açılacak"
-echo -e "  • ${BLUE}http://127.0.0.1:5000${NC} adresine erişebilirsiniz"
+echo -e "  • ${BLUE}http://127.0.0.1:4747${NC} adresine erişebilirsiniz"
 echo ""
 echo -e "${YELLOW}Manuel başlatma:${NC}"
 echo -e "  cd ~/termuxpanel"

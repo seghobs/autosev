@@ -424,4 +424,4 @@ def api_servers():
 
 if __name__ == '__main__':
     # Termux için 0.0.0.0 kullan
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=4747, debug=True)

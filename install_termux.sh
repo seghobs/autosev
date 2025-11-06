@@ -40,12 +40,22 @@ else
     exit 1
 fi
 
-# Projects klasörünü oluştur
-mkdir -p projects
-chmod 755 projects
+# Tüm dosya ve klasörlere izin ver
+echo -e "${BLUE}Dosya izinleri ayarlanıyor...${NC}"
 
-# app.py'ye çalıştırma izni ver
-chmod +x app.py
+# Tüm scriptlere çalıştırma izni
+chmod +x *.sh 2>/dev/null
+chmod +x *.py 2>/dev/null
+
+# Projects klasörü
+mkdir -p projects
+chmod 777 projects
+
+# Static ve templates
+chmod -R 755 static 2>/dev/null
+chmod -R 755 templates 2>/dev/null
+
+echo -e "${GREEN}✓ Dosya izinleri ayarlandı${NC}"
 
 # Otomatik başlatma yapılandırması
 echo ""
@@ -87,12 +97,12 @@ cat >> ~/.bashrc << 'AUTOSTART'
     PANEL_PID=$!
     
     echo "\033[0;32m✓ Panel başlatıldı (PID: $PANEL_PID)\033[0m"
-    echo "\033[0;34m🔗 URL: http://127.0.0.1:5000\033[0m"
+    echo "\033[0;34m🔗 URL: http://127.0.0.1:4747\033[0m"
     echo ""
     
     # 2 saniye bekle ve tarayıcıyı aç
     sleep 2
-    termux-open-url http://127.0.0.1:5000 2>/dev/null
+    termux-open-url http://127.0.0.1:4747 2>/dev/null
     
     echo "\033[0;33mDurdurmak için: kill $PANEL_PID\033[0m"
     echo "\033[0;33mLogları görmek için: tail -f ~/termux-panel.log\033[0m"

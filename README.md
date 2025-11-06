@@ -123,12 +123,12 @@ python app.py
 
 **Tarayıcıda Aç:**
 ```bash
-termux-open-url http://127.0.0.1:5000
+termux-open-url http://127.0.0.1:4747
 ```
 
 Veya:
 ```
-http://127.0.0.1:5000
+http://127.0.0.1:4747
 ```
 
 ## 🎯 Kullanım
@@ -166,7 +166,7 @@ http://127.0.0.1:5000
 ### Port Değiştirme
 `app.py` dosyasının son satırını düzenleyin:
 ```python
-app.run(host='0.0.0.0', port=5000, debug=True)
+app.run(host='0.0.0.0', port=4747, debug=True)
 ```
 
 ### Projeler Dizini
