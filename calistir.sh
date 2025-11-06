@@ -1,0 +1,102 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+# Renkli çıktı için
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo -e "${GREEN}═══════════════════════════════════════${NC}"
+echo -e "${GREEN}  Termux Otomatik Kurulum Başlatılıyor${NC}"
+echo -e "${GREEN}═══════════════════════════════════════${NC}"
+
+# Çalışma dizinini al
+INSTALL_DIR="$HOME/flask_apps"
+
+echo -e "\n${YELLOW}[1/6] Termux paketleri güncelleniyor...${NC}"
+pkg update -y && pkg upgrade -y
+
+echo -e "\n${YELLOW}[2/6] Python ve Git kuruluyor...${NC}"
+pkg install -y python git
+
+echo -e "\n${YELLOW}[3/6] Python paketleri kuruluyor...${NC}"
+pip install --upgrade pip
+pip install flask requests
+
+echo -e "\n${YELLOW}[4/6] Projeler indiriliyor...${NC}"
+# Ana dizini oluştur
+mkdir -p "$INSTALL_DIR"
+cd "$INSTALL_DIR"
+
+# Kntrl projesini indir
+if [ -d "kntrl" ]; then
+    echo -e "${YELLOW}kntrl klasörü zaten var, güncelleniyor...${NC}"
+    cd kntrl
+    git pull
+    cd ..
+else
+    echo -e "${YELLOW}kntrl projesi indiriliyor...${NC}"
+    git clone https://github.com/seghobs/kntrl.git
+fi
+
+# İsimaly projesini indir
+if [ -d "isimaly" ]; then
+    echo -e "${YELLOW}isimaly klasörü zaten var, güncelleniyor...${NC}"
+    cd isimaly
+    git pull
+    cd ..
+else
+    echo -e "${YELLOW}isimaly projesi indiriliyor...${NC}"
+    git clone https://github.com/seghobs/isimaly.git
+fi
+
+echo -e "\n${YELLOW}[5/6] İzinler ayarlanıyor...${NC}"
+chmod -R 777 "$INSTALL_DIR/kntrl"
+chmod -R 777 "$INSTALL_DIR/isimaly"
+
+echo -e "\n${YELLOW}[6/6] Flask uygulamaları başlatılıyor...${NC}"
+
+# Her iki projeyi de arka planda başlat
+cd "$INSTALL_DIR/kntrl"
+if [ -f "flask_app.py" ]; then
+    echo -e "${GREEN}kntrl Flask sunucusu başlatılıyor...${NC}"
+    nohup python flask_app.py > kntrl.log 2>&1 &
+    KNTRL_PID=$!
+    echo "kntrl PID: $KNTRL_PID"
+else
+    echo -e "${RED}HATA: kntrl/flask_app.py bulunamadı!${NC}"
+fi
+
+cd "$INSTALL_DIR/isimaly"
+if [ -f "flask_app.py" ]; then
+    echo -e "${GREEN}isimaly Flask sunucusu başlatılıyor...${NC}"
+    nohup python flask_app.py > isimaly.log 2>&1 &
+    ISIMALY_PID=$!
+    echo "isimaly PID: $ISIMALY_PID"
+else
+    echo -e "${RED}HATA: isimaly/flask_app.py bulunamadı!${NC}"
+fi
+
+# Kısa bir bekleme süresi
+sleep 3
+
+echo -e "\n${GREEN}═══════════════════════════════════════${NC}"
+echo -e "${GREEN}        Kurulum Tamamlandı! ✓${NC}"
+echo -e "${GREEN}═══════════════════════════════════════${NC}"
+echo -e "\n${YELLOW}Projeler:${NC}"
+echo -e "  📁 Konum: $INSTALL_DIR"
+echo -e "  📁 kntrl: $INSTALL_DIR/kntrl"
+echo -e "  📁 isimaly: $INSTALL_DIR/isimaly"
+
+echo -e "\n${YELLOW}Log dosyaları:${NC}"
+echo -e "  📄 kntrl: $INSTALL_DIR/kntrl/kntrl.log"
+echo -e "  📄 isimaly: $INSTALL_DIR/isimaly/isimaly.log"
+
+echo -e "\n${YELLOW}Sunucu durumunu kontrol etmek için:${NC}"
+echo -e "  tail -f $INSTALL_DIR/kntrl/kntrl.log"
+echo -e "  tail -f $INSTALL_DIR/isimaly/isimaly.log"
+
+echo -e "\n${YELLOW}Sunucuları durdurmak için:${NC}"
+echo -e "  pkill -f flask_app.py"
+
+echo -e "\n${GREEN}Başarılı! Flask sunucuları arka planda çalışıyor.${NC}\n"
