@@ -15,12 +15,14 @@ curl -sL https://raw.githubusercontent.com/seghobs/autosev/main/calistir.sh | ba
 Script otomatik olarak:
 
 1. ✅ Termux paketlerini günceller
-2. ✅ Python ve Git'i kurar
-3. ✅ Flask ve requests paketlerini yükler
-4. ✅ [kntrl](https://github.com/seghobs/kntrl) projesini indirir
-5. ✅ [isimaly](https://github.com/seghobs/isimaly) projesini indirir
-6. ✅ Tüm dosyalara gerekli izinleri verir (chmod 777)
-7. ✅ Her iki Flask uygulamasını arka planda başlatır
+2. ✅ Python, Git ve Termux API'yi kurar
+3. ✅ **Wake lock** alır (telefon kilitli olsa bile çalışır!)
+4. ✅ Flask ve requests paketlerini yükler
+5. ✅ [kntrl](https://github.com/seghobs/kntrl) projesini indirir
+6. ✅ [isimaly](https://github.com/seghobs/isimaly) projesini indirir
+7. ✅ Tüm dosyalara gerekli izinleri verir (chmod 777)
+8. ✅ Her iki Flask uygulamasını arka planda başlatır
+9. ✅ Otomatik başlatma scripti oluşturur (Termux açılınca otomatik çalışır)
 
 ## 📁 Klasör Yapısı
 
@@ -73,11 +75,37 @@ chmod +x calistir.sh
 ./calistir.sh
 ```
 
-## ⚙️ Gereksinimler
+## ⚠️ Gereksinimler
 
 - Android cihaz
 - Termux uygulaması
 - İnternet bağlantısı
+
+## 🔒 Telefon Kilitleme Sorunu Çözümü
+
+Script otomatik olarak **wake lock** alır, böylece:
+
+✅ Telefon kilitli olsa bile sunucular çalışmaya devam eder
+✅ Termux arka planda durmaz
+✅ Flask uygulamaları kesintisiz çalışır
+
+### 🚀 Termux:Boot ile Tam Otomatik (Opsiyonel)
+
+Telefon açılınca otomatik başlaması için:
+
+1. Play Store'dan **Termux:Boot** uygulamasını yükle
+2. Uygulamayı bir kez aç (izin vermek için)
+3. Telefonu yeniden başlat
+
+**Artık telefon açılınca sunucular otomatik başlar!**
+
+### Wake Lock'u Kaldırma
+
+Eğer pil tasarrufu istersen:
+
+```bash
+termux-wake-unlock
+```
 
 ## 🆘 Sorun Giderme
 

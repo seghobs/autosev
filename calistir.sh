@@ -13,17 +13,20 @@ echo -e "${GREEN}═════════════════════
 # Çalışma dizinini al
 INSTALL_DIR="$HOME/flask_apps"
 
-echo -e "\n${YELLOW}[1/6] Termux paketleri güncelleniyor...${NC}"
+echo -e "\n${YELLOW}[1/7] Termux paketleri güncelleniyor...${NC}"
 pkg update -y && pkg upgrade -y
 
-echo -e "\n${YELLOW}[2/6] Python ve Git kuruluyor...${NC}"
-pkg install -y python git
+echo -e "\n${YELLOW}[2/7] Python, Git ve Termux API kuruluyor...${NC}"
+pkg install -y python git termux-api
 
-echo -e "\n${YELLOW}[3/6] Python paketleri kuruluyor...${NC}"
+echo -e "\n${YELLOW}[2.5/7] Wake lock alınıyor (telefon arka planda olsa bile çalışacak)...${NC}"
+termux-wake-lock
+
+echo -e "\n${YELLOW}[3/7] Python paketleri kuruluyor...${NC}"
 pip install --upgrade pip
 pip install flask requests
 
-echo -e "\n${YELLOW}[4/6] Projeler indiriliyor...${NC}"
+echo -e "\n${YELLOW}[4/7] Projeler indiriliyor...${NC}"
 # Ana dizini oluştur
 mkdir -p "$INSTALL_DIR"
 cd "$INSTALL_DIR"
@@ -50,11 +53,11 @@ else
     git clone https://github.com/seghobs/isimaly.git
 fi
 
-echo -e "\n${YELLOW}[5/6] İzinler ayarlanıyor...${NC}"
+echo -e "\n${YELLOW}[5/7] İzinler ayarlanıyor...${NC}"
 chmod -R 777 "$INSTALL_DIR/kntrl"
 chmod -R 777 "$INSTALL_DIR/isimaly"
 
-echo -e "\n${YELLOW}[6/6] Flask uygulamaları başlatılıyor...${NC}"
+echo -e "\n${YELLOW}[6/7] Flask uygulamaları başlatılıyor...${NC}"
 
 # Her iki projeyi de arka planda başlat
 cd "$INSTALL_DIR/kntrl"
@@ -80,6 +83,39 @@ fi
 # Kısa bir bekleme süresi
 sleep 3
 
+echo -e "\n${YELLOW}[7/7] Otomatik başlatma ayarlanıyor...${NC}"
+
+# Boot scripti oluştur
+mkdir -p ~/.termux/boot
+cat > ~/.termux/boot/start-flask.sh << 'BOOTEOF'
+#!/data/data/com.termux/files/usr/bin/bash
+
+# Wake lock al
+termux-wake-lock
+
+# Kısa bekleme
+sleep 5
+
+# Projeler dizini
+INSTALL_DIR="$HOME/flask_apps"
+
+# Kntrl başlat
+if [ -f "$INSTALL_DIR/kntrl/flask_app.py" ]; then
+    cd "$INSTALL_DIR/kntrl"
+    nohup python flask_app.py > kntrl.log 2>&1 &
+fi
+
+# İsimaly başlat
+if [ -f "$INSTALL_DIR/isimaly/flask_app.py" ]; then
+    cd "$INSTALL_DIR/isimaly"
+    nohup python flask_app.py > isimaly.log 2>&1 &
+fi
+BOOTEOF
+
+chmod +x ~/.termux/boot/start-flask.sh
+
+echo -e "${GREEN}✓ Boot scripti oluşturuldu: ~/.termux/boot/start-flask.sh${NC}"
+
 echo -e "\n${GREEN}═══════════════════════════════════════${NC}"
 echo -e "${GREEN}        Kurulum Tamamlandı! ✓${NC}"
 echo -e "${GREEN}═══════════════════════════════════════${NC}"
@@ -99,4 +135,11 @@ echo -e "  tail -f $INSTALL_DIR/isimaly/isimaly.log"
 echo -e "\n${YELLOW}Sunucuları durdurmak için:${NC}"
 echo -e "  pkill -f flask_app.py"
 
+echo -e "\n${YELLOW}Wake lock'u kaldırmak için:${NC}"
+echo -e "  termux-wake-unlock"
+
+echo -e "\n${GREEN}✓ Wake lock aktif - Telefon arka planda olsa bile sunucular çalışacak!${NC}"
+echo -e "${GREEN}✓ Boot scripti kuruldu - Termux açılınca otomatik başlatacak!${NC}"
+echo -e "\n${YELLOW}📢 Önemli: Termux:Boot uygulamasını kurun (isteğe bağlı)${NC}"
+echo -e "  Play Store'dan 'Termux:Boot' yüklerseniz telefon açılınca otomatik başlar!"
 echo -e "\n${GREEN}Başarılı! Flask sunucuları arka planda çalışıyor.${NC}\n"
