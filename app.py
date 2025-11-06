@@ -303,13 +303,15 @@ def start_project():
                     )
                 else:
                     # Linux/Termux için
-                    subprocess.Popen(
-                        [sys.executable, 'manage.py', 'runserver'],
-                        cwd=project_path,
-                        stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL,
-                        start_new_session=True
-                    )
+                    log_file = os.path.join(project_path, f'{project_name}.log')
+                    with open(log_file, 'w') as f:
+                        subprocess.Popen(
+                            [sys.executable, 'manage.py', 'runserver'],
+                            cwd=project_path,
+                            stdout=f,
+                            stderr=f,
+                            start_new_session=True
+                        )
                 return jsonify({'success': True, 'message': 'Django projesi arka planda başlatıldı'})
             except Exception as e:
                 return jsonify({'success': False, 'error': str(e)})
@@ -343,13 +345,16 @@ cd /d "{project_path}"
             )
         else:
             # Linux/Termux için arka planda çalıştır
-            subprocess.Popen(
-                [sys.executable, main_file],
-                cwd=project_path,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                start_new_session=True
-            )
+            # Log dosyasına yazdır
+            log_file = os.path.join(project_path, f'{project_name}.log')
+            with open(log_file, 'w') as f:
+                subprocess.Popen(
+                    [sys.executable, main_file_path],
+                    cwd=project_path,
+                    stdout=f,
+                    stderr=f,
+                    start_new_session=True
+                )
         
         return jsonify({'success': True, 'message': 'Proje arka planda başlatıldı'})
     except Exception as e:
@@ -419,4 +424,4 @@ def api_servers():
 
 if __name__ == '__main__':
     # Termux için 0.0.0.0 kullan
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
