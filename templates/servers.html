@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>🌐 Sunucular - Termux Panel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/static/css/styles.css" rel="stylesheet">
+</head>
+<body class="bg-dark text-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-secondary">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="/">Termux Panel</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="/projects"><i class="bi bi-folder-fill me-1"></i>Projeler</a></li>
+        <li class="nav-item"><a class="nav-link" href="/packages"><i class="bi bi-box-seam me-1"></i>Paketler</a></li>
+        <li class="nav-item"><a class="nav-link" href="/processes"><i class="bi bi-cpu me-1"></i>Prosesler</a></li>
+        <li class="nav-item"><a class="nav-link active" href="/servers"><i class="bi bi-server me-1"></i>Sunucular</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container py-4">
+  <div class="mb-4">
+    <h2 class="fw-bold mb-2" style="background: linear-gradient(135deg, #4a5568 0%, #718096 50%, #a0aec0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+      <i class="bi bi-server me-2"></i>Sunucular
+    </h2>
+    <p class="text-muted">Aktif Flask ve Django sunucularını görüntüleyin</p>
+  </div>
+
+  <div class="card bg-secondary bg-opacity-10 border-secondary">
+    <div class="card-body">
+      <h5 class="card-title mb-3">
+        <i class="bi bi-broadcast me-2" style="color: #9ca3af;"></i>
+        Çalışan Sunucular
+      </h5>
+      <div id="serversList">
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2">Yükleniyor...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function loadServers() {
+  fetch('/api/servers')
+    .then(r => r.json())
+    .then(data => {
+      const container = document.getElementById('serversList');
+      if (data.servers.length === 0) {
+        container.innerHTML = '<p class="text-muted text-center">Çalışan sunucu yok.</p>';
+        return;
+      }
+      
+      let html = '<div class="row g-3">';
+      data.servers.forEach(s => {
+        html += `
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="card bg-dark border-success h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h6 class="card-title mb-0">${s.name}</h6>
+                  <span class="badge bg-success">Çalışıyor</span>
+                </div>
+                <p class="card-text small text-muted mb-1"><strong>PID:</strong> ${s.pid}</p>
+                <p class="card-text small text-muted mb-1"><strong>Port:</strong> ${s.port}</p>
+                <div class="alert alert-info py-2 px-3 mb-2">
+                  <a href="${s.url}" target="_blank" class="text-decoration-none text-light fw-bold">${s.url}</a>
+                </div>
+                <div class="d-grid gap-2">
+                  <a href="${s.url}" target="_blank" class="btn btn-sm btn-success">Aç</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    });
+}
+
+loadServers();
+setInterval(loadServers, 5000);
+</script>
+</body>
+</html>
