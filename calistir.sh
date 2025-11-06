@@ -116,6 +116,51 @@ chmod +x ~/.termux/boot/start-flask.sh
 
 echo -e "${GREEN}✓ Boot scripti oluşturuldu: ~/.termux/boot/start-flask.sh${NC}"
 
+# Bashrc'ye otomatik başlatma ekle
+if ! grep -q "# AutoSev Flask Auto-Start" ~/.bashrc; then
+    cat >> ~/.bashrc << 'BASHEOF'
+
+# AutoSev Flask Auto-Start
+if [ -f "$HOME/flask_apps/kntrl/flask_app.py" ] || [ -f "$HOME/flask_apps/isimaly/flask_app.py" ]; then
+    # Sadece ilk terminalde çalıştır (çift başlatmayı önle)
+    if [ -z "$FLASK_STARTED" ]; then
+        export FLASK_STARTED=1
+        
+        # Wake lock al
+        termux-wake-lock 2>/dev/null
+        
+        # Kısa bekleme
+        sleep 2
+        
+        # Kntrl başlat
+        if [ -f "$HOME/flask_apps/kntrl/flask_app.py" ]; then
+            if ! pgrep -f "flask_app.py" > /dev/null; then
+                cd "$HOME/flask_apps/kntrl"
+                nohup python flask_app.py > kntrl.log 2>&1 &
+                echo "✓ Kntrl Flask sunucusu başlatıldı (PID: $!)"
+            fi
+        fi
+        
+        # İsimaly başlat
+        if [ -f "$HOME/flask_apps/isimaly/flask_app.py" ]; then
+            if ! pgrep -f "isimaly.*flask_app.py" > /dev/null; then
+                cd "$HOME/flask_apps/isimaly"
+                nohup python flask_app.py > isimaly.log 2>&1 &
+                echo "✓ İsimaly Flask sunucusu başlatıldı (PID: $!)"
+            fi
+        fi
+        
+        cd ~
+        echo "🚀 Flask sunucuları arka planda çalışıyor!"
+    fi
+fi
+# End AutoSev Flask Auto-Start
+BASHEOF
+    echo -e "${GREEN}✓ Bashrc'ye otomatik başlatma eklendi${NC}"
+else
+    echo -e "${YELLOW}⚠ Bashrc'de otomatik başlatma zaten mevcut${NC}"
+fi
+
 echo -e "\n${GREEN}═══════════════════════════════════════${NC}"
 echo -e "${GREEN}        Kurulum Tamamlandı! ✓${NC}"
 echo -e "${GREEN}═══════════════════════════════════════${NC}"

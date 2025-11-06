@@ -89,6 +89,20 @@ Script otomatik olarak **wake lock** alır, böylece:
 ✅ Termux arka planda durmaz
 ✅ Flask uygulamaları kesintisiz çalışır
 
+## 🚀 Otomatik Başlatma
+
+Script `.bashrc` dosyanıza otomatik başlatma kodu ekler:
+
+✅ Termux'u her açtığınızda sunucular otomatik başlar
+✅ Çift başlatmayı önler (zaten çalışıyorsa yeniden başlatmaz)
+✅ Arka planda sessizce çalışır
+
+### Otomatik Başlatmayı Devre Dışı Bırakma
+
+```bash
+sed -i '/# AutoSev Flask Auto-Start/,/# End AutoSev Flask Auto-Start/d' ~/.bashrc
+```
+
 ### 🚀 Termux:Boot ile Tam Otomatik (Opsiyonel)
 
 Telefon açılınca otomatik başlaması için:
